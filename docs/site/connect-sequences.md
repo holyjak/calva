@@ -37,8 +37,8 @@ A connect sequence configures the following:
     * `leinProfiles`: At Jack-in to a Leiningen project, use these profiles to launch the repl.
     * `leinAlias`: At Jack-in to a Leiningen project, launch with this alias. Set to `null` to launch with Calva's default task (a headless repl), w/o prompting.
     * `cljAliases`: At Jack-in to a deps.edn project, use these aliases to launch the repl.
-    * `cljsLaunchBuilds`: The cljs builds to start/watch at Jack-in/connect.
-    * `cljsDefaultBuild`: Which cljs build to attach to at the initial connect.
+    * `cljsLaunchBuilds`: The cljs builds to start/watch at Jack-in/connect (applies for example to Figwheel and shadow-cljs)
+    * `cljsDefaultBuild`: Which cljs build to attach to at the initial connect (applies for example to Figwheel and shadow-cljs).
 * `jackInEnv`: An object with environment variables that will be merged with the global `calva.jackInEnv` and then applied to the Jack-in process. The merge is very similar to how Clojure's `merge` works. So for any common keys between the global setting and this one, the ones from this setting will win.
 
 The [Calva built-in sequences](https://github.com/BetterThanTomorrow/calva/blob/published/src/nrepl/connectSequence.ts) also use this format, check them out to get a clearer picture of how these settings work.
@@ -117,6 +117,26 @@ A deps.edn sequence that does not promote the ClojureScript repl at all (leaving
                 "connectCode": "\"Don't promote me bro!\"",
                 "isConnectedRegExp": "Don't promote me bro!"
             }
+        }
+    ]
+}
+```
+
+A full-stack application based on shadow-cljs where the backend is started from the shadow-cljs _Clojure_ REPL automatically upon connection (here is the [shadow-cljs.edn](https://github.com/holyjak/fulcro-intro-wshop/blob/b3de5c9f4a1fd278981a374089bcb01ee361b712/shadow-cljs.edn)):
+
+```json
+{
+    "calva.replConnectSequences": [
+        
+        {
+            "name": "Full-stack app via shadow-cljs",
+            "projectType": "shadow-cljs",
+            "cljsType": "shadow-cljs",
+            "menuSelections": {
+                "cljsDefaultBuild": "todomvc",
+                "cljsLaunchBuilds": ["todomvc"],
+            },
+            "afterCLJReplJackInCode": "(do (require 'fulcro-todomvc.server) (fulcro-todomvc.server/http-server))"
         }
     ]
 }
